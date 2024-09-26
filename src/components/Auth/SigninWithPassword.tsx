@@ -1,31 +1,60 @@
 "use client";
 import React, { useState } from "react";
-import Link from "next/link";
+import { useFormik } from "formik";
+import { loginUser } from "@/services/auth";
+import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { login_schema } from "@/utils/validation-scheme";
+import { setUser } from "@/redux/slices/authSlice";
 
 export default function SigninWithPassword() {
+  const dispatch = useDispatch();
+  // const router = useRouter();
+
+  const [generalError, setGeneralError] = useState<string>("");
   const [data, setData] = useState({
     remember: false,
   });
+  
+  const { handleSubmit, handleBlur, handleChange, values, errors, touched } =
+    useFormik({
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      validationSchema: login_schema,
+      onSubmit: (values) => {
+        loginUser(values)
+          .then((res) => {
+            if (res.ResponseCode === 200) {
+              // router.push("/");
+
+              dispatch(setUser(res.ResponseData));
+              localStorage.setItem("token", res.ResponseData.token);
+            }
+          })
+          .catch((err) => {
+            setGeneralError(err.response?.data?.ErrorMessage);
+          });
+      },
+    });
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className="mb-4">
-        <label
-          htmlFor="email"
-          className="mb-2.5 block font-medium text-dark dark:text-white"
-        >
-          Email
-        </label>
+        <label htmlFor="email">Email</label>
         <div className="relative">
           <input
             type="email"
             placeholder="Enter your email"
             name="email"
+            value={values.email}
+            onBlur={handleBlur}
+            onChange={handleChange}
             className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
           />
-
           <span className="absolute right-4.5 top-1/2 -translate-y-1/2">
-            <svg
+          <svg
               className="fill-current"
               width="22"
               height="22"
@@ -43,23 +72,18 @@ export default function SigninWithPassword() {
           </span>
         </div>
       </div>
-
-      <div className="mb-5">
-        <label
-          htmlFor="password"
-          className="mb-2.5 block font-medium text-dark dark:text-white"
-        >
-          Password
-        </label>
+      <div className="mb-4">
+        <label htmlFor="password">Password</label>
         <div className="relative">
           <input
             type="password"
             name="password"
             placeholder="Enter your password"
-            autoComplete="password"
+            value={values.password}
+            onBlur={handleBlur}
+            onChange={handleChange}
             className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
           />
-
           <span className="absolute right-4.5 top-1/2 -translate-y-1/2">
             <svg
               className="fill-current"
@@ -85,12 +109,8 @@ export default function SigninWithPassword() {
           </span>
         </div>
       </div>
-
-      <div className="mb-6 flex items-center justify-between gap-2 py-2">
-        <label
-          htmlFor="remember"
-          className="flex cursor-pointer select-none items-center font-satoshi text-base font-medium text-dark dark:text-white"
-        >
+      <div className="mb-4 flex items-center justify-between gap-2 py-2">
+        <label htmlFor="remember" className="flex">
           <input
             type="checkbox"
             name="remember"
@@ -119,20 +139,12 @@ export default function SigninWithPassword() {
           </span>
           Remember me
         </label>
-
-        <Link
-          href="/auth/forgot-password"
-          className="select-none font-satoshi text-base font-medium text-dark underline duration-300 hover:text-primary dark:text-white dark:hover:text-primary"
-        >
-          Forgot Password?
-        </Link>
       </div>
-
-      <div className="mb-4.5">
-        <button
-          type="submit"
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
-        >
+      <div className="bb-auth__input-box col-12">
+        {generalError}
+      </div>
+      <div className="mb-4 flex justify-center">
+        <button type="submit" className="submit-btn primary-filled-btn" >
           Sign In
         </button>
       </div>

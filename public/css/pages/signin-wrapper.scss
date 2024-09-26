@@ -1,0 +1,31 @@
+.signin-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  h4 {
+    color: #b46add;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 40px;
+  }
+
+  form {
+    width: 400px;
+
+    label {
+      color: rgb(109 113 163);
+      font-weight: 500;
+
+     .peer:checked ~ .peer-checked\:bg-primary {
+        background-color: rgb(78 83 151);
+      }
+    }
+  }
+
+  .submit-btn {
+    width: 200px;
+  }
+}

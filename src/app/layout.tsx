@@ -1,10 +1,11 @@
 "use client";
-import "jsvectormap/dist/css/jsvectormap.css";
-import "flatpickr/dist/flatpickr.min.css";
-import "@/css/satoshi.css";
-import "@/css/style.css";
+// import "jsvectormap/dist/css/jsvectormap.css";
+// import "flatpickr/dist/flatpickr.min.css";
+import "../../public/css/style.scss";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
+import ReduxProvider from "../redux/provider";
+import AppProvider from "../contextApi/AppProvider";
 
 export default function RootLayout({
   children,
@@ -20,7 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        {loading ? <Loader /> : children}
+        <ReduxProvider>
+          <AppProvider>
+            { children}
+            </AppProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
